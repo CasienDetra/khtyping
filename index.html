@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Typing Game</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
+</head>
+
+<body>
+  <div id="vanta"></div>
+  <main>
+    <h1>"Khmer Typing Game"</h1>
+    <section class="dashboard">
+      <div class="menu-container">
+        <button class="new btn" id="new">New</button>
+        <button class="load btn" id="load">load</button>
+        <button class="export btn" id="export">Start</button>
+        <button class="random btn" id="randomize">Random</button>
+        <button class="about btn">
+          <a style="text-decoration: none; color: #183b4e" onMouseOver="this.style.color=' #183b4e;'"
+            onMouseOut="this.style.color='#183b4e'">About</a>
+        </button>
+      </div>
+      <div class="game-container">
+        <div class="game">
+          <div class="game-text">
+            <p class="gray" id="sample">
+              <span class="cursor">ែ</span>ស្នហាមានរសជាតិយ៉ាងមិចទៅ?
+              តើអាចប្រាប់បងបានទេពាលពៅ? យប់នេះមិនចង់អោយអូននាំផ្លូវ
+              ជូនទៅកន្លែងដែលមិនគួរទៅ
+            </p>
+          </div>
+          <div class="game-input">
+            <input type="text" placeholder="click here" id="visibleinput" />
+            <!-- <button id="hideinput">Hide</button> -->
+          </div>
+        </div>
+      </div>
+      <div class="score-container">
+        <div class="stats">
+          <p>
+            Percantage:
+            <span id="percentage">0% </span>
+          </p>
+          <p>
+            WPM:
+            <span id="wpm">0</span>
+          </p>
+          <p>
+            Words Completed:
+            <span id="num_words">0</span>
+          </p>
+          <p>
+            Accuracy:
+            <span id="accuracy">0%</span>
+          </p>
+        </div>
+        <input type="text" id="input" />
+      </div>
+    </section>
+  </main>
+  <script src="./js/app.js"></script>
+</body>
+
+</html>

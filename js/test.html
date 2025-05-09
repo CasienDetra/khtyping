@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="main.css">
+ <title>Typing Game</title>
+</head>
+
+<body>
+ <h1 id="header">Typing Game</h1>
+ <main>
+  <div class="main-content">
+   <div class="container">
+    <div class="config">
+     <button id="new">New</button>
+     <button id="export">Export</button>
+     <button id="randomize">Randomize</button>
+     <button id="load">Load</button>
+     <button><a href="about.html">About</a></button>
+     <input id="file" type="file" style="display: none;">
+    </div>
+
+    <p class="gray" id="sample"><span class="selected">C</span>razy? I was crazy once. They locked me in a room. A
+     rubber room! A rubber room with rats, and rats make me crazy.</p>
+    <div class="realinput">
+     <input placeholder="Click here!" class="gray" type="text" id="visibleinput">
+     <button id="hideinput">Hide</button>
+    </div>
+   </div>
+
+   <div class="stats">
+    <p>Percentage: <span id="percentage">0.00%</span></p>
+    <p>WPM: <span id="wpm">0</span></p>
+    <p>Words Completed: <span id="numwords">0</span></p>
+    <p>Accuracy: <span id="accuracy">0.00%</span></p>
+   </div>
+
+   <input id="input" type="text">
+  </div>
+ </main>
+
+
+
+ <script src="index.js"></script>
+</body>
+
+</html>
