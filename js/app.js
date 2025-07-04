@@ -17,172 +17,184 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// Main blur and opacity animation
 setTimeout(() => {
   const main = document.querySelector("main");
   main.style.opacity = 1;
   main.style.filter = "blur(0px)";
 }, 1000);
 
+// Simplified text samples (reduced to 2)
 const khmerTexts = [
   `ែស្នហាមានរសជាតិយ៉ាងមិចទៅ? តើអាចប្រាប់បងបានទេពាលពៅ? យប់នេះមិនចង់អោយអូននាំផ្លូវ ជូនទៅកន្លែងដែលមិនគួរទៅ`,
-  `បច្ចេកវិទ្យាបានកំពុងផ្លាស់ប្តូរជីវិតរស់នៅរបស់យើងជារៀងរាល់ថ្ងៃ។ ការប្រើប្រាស់កុំព្យូទ័រ និងទូរស័ព្ទវៃឆ្លាតកាន់តែទូលំទូលាយនៅក្នុងសង្គមខ្មែរ។`,
+  `បច្ចេកវិទ្យាបានកំពុងផ្លាស់ប្តូរជីវិតរស់នៅរបស់យើងជារៀងរាល់ថ្ងៃ។ ការប្រើប្រាស់កុំព្យូទ័រ និងទូរស័ព្pទវៃឆ្លាតកាន់តែទូលំទូលាយនៅក្នុងសង្គមខ្មែរ។`,
 ];
 
-//declare 
-function Task(text) {
-  this.text = text;
-  this.numwords = text.split(" ").length;
-  this.activeWordCount = 0;
-  this.activeIndex = 0;
-  this.hasError = false;
-  this.correctChars = 0;
-  this.incorrectChars = 0;
-  this.finished = false;
+// Task class encapsulates the typing task state and logic
+class Task {
+  constructor(text) {
+    this.text = text;
+    this.words = text.trim().split(/\s+/);
+    this.numWords = this.words.length;
+    this.activeIndex = 0;
+    this.activeWordCount = 0;
+    this.correctChars = 0;
+    this.incorrectChars = 0;
+    this.hasError = false;
+    this.finished = false;
+  }
+
+  get currentChar() {
+    return this.text.charAt(this.activeIndex);
+  }
+
+  incrementIndex() {
+    this.activeIndex++;
+    if (
+      this.currentChar === " " ||
+      this.activeIndex === this.text.length
+    ) {
+      this.activeWordCount++;
+    }
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Cache DOM elements
   const elements = {
     sample: document.getElementById("sample"),
-    input: document.getElementById("input"),
+    visibleInput: document.getElementById("visibleinput"),
     wpm: document.getElementById("wpm"),
     numWords: document.getElementById("num_words"),
     percentage: document.getElementById("percentage"),
     accuracy: document.getElementById("accuracy"),
     newBtn: document.getElementById("new"),
     randomizeBtn: document.getElementById("randomize"),
-    visibleInput: document.getElementById("visibleinput"),
     hideBtn: document.getElementById("hideinput"),
   };
 
-  let currentTaskID = 0;
-  let randomize = false;
-  let currentTask;
+  let currentTask = null;
+  let randomizeMode = false;
   let startTime = 0;
   let inputHidden = false;
-  let isComposing = false; 
+  let isComposing = false; // New flag for composition
 
-  function getNewTaskStr() {
-    if (randomize) {
-      const index = Math.floor(Math.random() * khmerTexts.length);
-      const text = khmerTexts[index];
-      const words = text.split(/\s+/).filter((word) => word !== "");
-      const wordIndex = Math.floor(Math.random() * words.length);
-      return words[wordIndex];
+  // Utility: Normalize and compare Khmer characters
+  const compareKhmerChars = (expected, typed) =>
+    expected.normalize("NFC") === typed.normalize("NFC");
+
+  // Get a new task string based on mode
+  function getNewTaskText() {
+    if (randomizeMode) {
+      // Pick a random word from a random text
+      const randomText =
+        khmerTexts[Math.floor(Math.random() * khmerTexts.length)];
+      const words = randomText.trim().split(/\s+/);
+      return words[Math.floor(Math.random() * words.length)];
     } else {
-      const index = Math.floor(Math.random() * khmerTexts.length);
-      currentTaskID = index;
-      return khmerTexts[index];
+      // Pick a random full text
+      return khmerTexts[Math.floor(Math.random() * khmerTexts.length)];
     }
   }
 
-  function strToHTML(str, correctEnd) {
-    if (correctEnd === 0) {
-      return `<span class="cursor">${str.charAt(0)}</span>${str.substring(1)}`;
-    } else if (correctEnd === str.length) {
-      return `<span class="blue">${str}</span>`;
+  // Render the sample text with cursor and highlighting
+  function renderSampleText(text, cursorPos) {
+    if (cursorPos === 0) {
+      return `<span class="cursor">${text.charAt(0)}</span>${text.slice(1)}`;
+    } else if (cursorPos >= text.length) {
+      return `<span class="blue">${text}</span>`;
     } else {
       return (
-        `<span class="blue">${str.substring(0, correctEnd)}</span>` +
-        `<span class="cursor">${str.charAt(correctEnd)}</span>` +
-        `${str.substring(correctEnd + 1)}`
+        `<span class="blue">${text.slice(0, cursorPos)}</span>` +
+        `<span class="cursor">${text.charAt(cursorPos)}</span>` +
+        text.slice(cursorPos + 1)
       );
     }
   }
 
-  // Reset
-  function resetTaskState() {
+  // Reset and initialize the task state and UI
+  function resetTask() {
     elements.sample.classList.remove("green", "gray");
+    currentTask = new Task(getNewTaskText());
+    elements.sample.innerHTML = renderSampleText(currentTask.text, 0);
     elements.visibleInput.value = ">";
-    currentTask = new Task(getNewTaskStr());
-    elements.sample.innerHTML = strToHTML(currentTask.text, 0);
-    elements.input.value = "";
-    elements.percentage.innerText = "0%";
-    elements.accuracy.innerText = "0%";
-    elements.wpm.innerText = "0";
-    elements.numWords.innerText = currentTask.numwords;
+    elements.percentage.textContent = "0%";
+    elements.accuracy.textContent = "0%";
+    elements.wpm.textContent = "0";
+    elements.numWords.textContent = currentTask.numWords;
     startTime = 0;
     elements.visibleInput.focus();
   }
 
-  function compareKhmerChars(expected, typed) {
-    return expected.normalize("NFC") === typed.normalize("NFC");
-  }
-
-  function updateUI(typedText) {
-    if (currentTask.finished || isComposing) return;
-
-    const expectedText = currentTask.text.substring(currentTask.activeIndex);
-    let newCorrectChars = 0;
-    let newIncorrectChars = 0;
-    let newActiveIndex = currentTask.activeIndex;
+  // Update UI and task state based on typed characters
+  function handleTypedChar(typedText) {
+    if (currentTask.finished || isComposing) return; // Added isComposing check
 
     for (let i = 0; i < typedText.length; i++) {
-      const typedChar = typedText[i];
-      const expectedChar = expectedText[i];
+      const char = typedText[i];
+      const expectedChar = currentTask.currentChar;
 
-      if (expectedChar && compareKhmerChars(expectedChar, typedChar)) {
-        newCorrectChars++;
-        newActiveIndex++;
+      if (expectedChar && compareKhmerChars(expectedChar, char)) {
+        currentTask.correctChars++;
+        currentTask.incrementIndex();
       } else {
-        newIncorrectChars++;
         currentTask.hasError = true;
+        currentTask.incorrectChars++;
       }
     }
 
-    currentTask.correctChars += newCorrectChars;
-    currentTask.incorrectChars += newIncorrectChars;
-    currentTask.activeIndex = newActiveIndex;
-
     if (startTime === 0) {
-      startTime = new Date().getTime();
+      startTime = Date.now();
     }
 
-    if (currentTask.activeIndex === currentTask.text.length) {
-      elements.sample.innerHTML = currentTask.text;
+    // Check if task finished
+    if (currentTask.activeIndex >= currentTask.text.length) {
+      elements.sample.textContent = currentTask.text;
       elements.sample.classList.add("green");
       currentTask.finished = true;
-      currentTask.activeWordCount = currentTask.numwords;
+      currentTask.activeWordCount = currentTask.numWords;
     } else {
-      elements.sample.innerHTML = strToHTML(
+      elements.sample.innerHTML = renderSampleText(
         currentTask.text,
         currentTask.activeIndex,
       );
     }
 
-    // Update stats
-    const endTime = new Date().getTime();
-    const timeInSeconds = (endTime - startTime) / 1000;
-    const wpm =
-      timeInSeconds > 0
-        ? (currentTask.activeWordCount / timeInSeconds) * 60
-        : 0;
+    updateStats();
+  }
 
-    elements.wpm.innerText = wpm.toFixed(2);
-    elements.numWords.innerText = currentTask.activeWordCount;
-    elements.percentage.innerText =
-      ((currentTask.activeIndex / currentTask.text.length) * 100).toFixed(2) +
-      "%";
+  // Update stats: WPM, accuracy, progress
+  function updateStats() {
+    const elapsedSeconds = (Date.now() - startTime) / 1000 || 1;
+    const wpm = (currentTask.activeWordCount / elapsedSeconds) * 60;
+
+    elements.wpm.textContent = wpm.toFixed(2);
+    elements.numWords.textContent = currentTask.activeWordCount;
+    elements.percentage.textContent = (
+      (currentTask.activeIndex / currentTask.text.length) *
+      100
+    ).toFixed(2) + "%";
 
     const totalChars = currentTask.correctChars + currentTask.incorrectChars;
     const accuracy =
-      totalChars > 0 ? (currentTask.correctChars / totalChars) * 100 : 100;
-    elements.accuracy.innerText = accuracy.toFixed(2) + "%";
+      totalChars > 0
+        ? (currentTask.correctChars / totalChars) * 100
+        : 100;
+
+    elements.accuracy.textContent = accuracy.toFixed(2) + "%";
   }
 
-  // Initialize first task
-  currentTask = new Task(getNewTaskStr());
-  elements.sample.innerHTML = strToHTML(currentTask.text, 0);
-  elements.numWords.innerText = currentTask.numwords;
+  // Event: Input handler for visible input box
+  elements.visibleInput.addEventListener("input", () => {
+    if (isComposing) return; // Do not process input during composition
 
-  elements.visibleInput.addEventListener("input", function (event) {
-    if (isComposing) return; 
-
-    const typedText = elements.visibleInput.value.substring(1); 
+    const typedText = elements.visibleInput.value.slice(1); // Remove the leading '>'
 
     if (typedText.length > 0 && !currentTask.finished) {
-      updateUI(typedText);
+      handleTypedChar(typedText); // Call the updated handleTypedChar
     }
 
+    // Reset input to '>' only if not composing and not finished
     if (!isComposing && !currentTask.finished) {
       elements.visibleInput.value = ">";
     }
@@ -194,28 +206,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   elements.visibleInput.addEventListener("compositionend", (event) => {
     isComposing = false;
-    const typedText = elements.visibleInput.value.substring(1); 
+    const typedText = elements.visibleInput.value.slice(1); // Remove the leading '>'
     if (typedText.length > 0 && !currentTask.finished) {
-      updateUI(typedText);
+      handleTypedChar(typedText); // Call the updated handleTypedChar
     }
-    elements.visibleInput.value = ">"; 
+    elements.visibleInput.value = ">"; // Reset after composition ends
   });
 
-  elements.visibleInput.addEventListener("keydown", function (event) {
+  // Event: Restart task on 'r' key if finished
+  elements.visibleInput.addEventListener("keydown", (event) => {
     if (
-      event.key === "r" &&
+      event.key.toLowerCase() === "r" &&
       currentTask.finished &&
       !event.ctrlKey &&
       !event.metaKey
     ) {
       event.preventDefault();
-      resetTaskState();
+      resetTask();
     }
     if (event.key === "Backspace" && elements.visibleInput.value === ">") {
       event.preventDefault();
     }
   });
 
+  // Focus and blur handlers for visible input
   elements.visibleInput.addEventListener("focus", () => {
     if (!elements.visibleInput.value) {
       elements.visibleInput.value = ">";
@@ -223,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.sample.classList.remove("gray");
   });
 
-  elements.visibleInput.addEventListener("focusout", () => {
+  elements.visibleInput.addEventListener("blur", () => {
     if (!inputHidden) {
       elements.visibleInput.value = "";
       if (!elements.sample.classList.contains("green")) {
@@ -232,26 +246,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Button handlers
+  // Button click handlers
   elements.randomizeBtn.addEventListener("click", () => {
-    elements.randomizeBtn.blur();
-    randomize = !randomize;
-    elements.randomizeBtn.classList.toggle("button-active", randomize);
-    resetTaskState();
+    randomizeMode = !randomizeMode;
+    elements.randomizeBtn.classList.toggle("button-active", randomizeMode);
+    resetTask();
   });
 
   elements.newBtn.addEventListener("click", () => {
-    elements.newBtn.blur();
-    resetTaskState();
+    resetTask();
   });
 
   elements.hideBtn.addEventListener("click", () => {
-    elements.hideBtn.blur();
     inputHidden = !inputHidden;
     elements.hideBtn.classList.toggle("button-active", inputHidden);
     elements.visibleInput.classList.toggle("gray", inputHidden);
   });
 
-
-  elements.visibleInput.focus();
+  // Initialize first task on page load
+  resetTask();
 });
