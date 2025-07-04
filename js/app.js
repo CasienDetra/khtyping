@@ -1,33 +1,34 @@
 // Background animation (keeping this part as it's critical for UI)
 window.addEventListener("DOMContentLoaded", () => {
-  VANTA.BIRDS({
+  VANTA.WAVES({
     el: "#vanta",
-    mouseControls: true,
-    touchControls: true,
-    gyroControls: false,
-    minHeight: 200.0,
-    minWidth: 200.0,
-    scale: 1.0,
-    scaleMobile: 1.0,
-    color1: "#d29f80",
-    colorMode: "lerp",
+  mouseControls: true,
+  touchControls: true,
+  gyroControls: false,
+  minHeight: 200.00,
+  minWidth: 200.00,
+  scale: 1.00,
+  scaleMobile: 1.00,
+  color: 0x00000,
+  shininess: 106.00,
+  waveHeight: 23.00,
+  waveSpeed: 0.40,
+  zoom: 1.23
   });
 });
 
-// Main blur and opacity animation
 setTimeout(() => {
   const main = document.querySelector("main");
   main.style.opacity = 1;
   main.style.filter = "blur(0px)";
 }, 1000);
 
-// Simplified text samples (reduced to 2)
 const khmerTexts = [
   `ែស្នហាមានរសជាតិយ៉ាងមិចទៅ? តើអាចប្រាប់បងបានទេពាលពៅ? យប់នេះមិនចង់អោយអូននាំផ្លូវ ជូនទៅកន្លែងដែលមិនគួរទៅ`,
   `បច្ចេកវិទ្យាបានកំពុងផ្លាស់ប្តូរជីវិតរស់នៅរបស់យើងជារៀងរាល់ថ្ងៃ។ ការប្រើប្រាស់កុំព្យូទ័រ និងទូរស័ព្ទវៃឆ្លាតកាន់តែទូលំទូលាយនៅក្នុងសង្គមខ្មែរ។`,
 ];
 
-// Simplified Task constructor
+//declare 
 function Task(text) {
   this.text = text;
   this.numwords = text.split(" ").length;
@@ -40,7 +41,6 @@ function Task(text) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Get DOM elements
   const elements = {
     sample: document.getElementById("sample"),
     input: document.getElementById("input"),
@@ -59,8 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentTask;
   let startTime = 0;
   let inputHidden = false;
+  let isComposing = false; 
 
-  // Get text for next task
   function getNewTaskStr() {
     if (randomize) {
       const index = Math.floor(Math.random() * khmerTexts.length);
@@ -108,22 +108,30 @@ document.addEventListener("DOMContentLoaded", () => {
     return expected.normalize("NFC") === typed.normalize("NFC");
   }
 
-  function updateUI(key) {
-    if (currentTask.finished) return;
+  function updateUI(typedText) {
+    if (currentTask.finished || isComposing) return;
 
-    const currentChar = currentTask.text[currentTask.activeIndex];
+    const expectedText = currentTask.text.substring(currentTask.activeIndex);
+    let newCorrectChars = 0;
+    let newIncorrectChars = 0;
+    let newActiveIndex = currentTask.activeIndex;
 
-    if (compareKhmerChars(currentChar, key)) {
-      currentTask.correctChars++;
-      currentTask.activeIndex++;
+    for (let i = 0; i < typedText.length; i++) {
+      const typedChar = typedText[i];
+      const expectedChar = expectedText[i];
 
-      if (key === " " || currentTask.activeIndex === currentTask.text.length) {
-        currentTask.activeWordCount++;
+      if (expectedChar && compareKhmerChars(expectedChar, typedChar)) {
+        newCorrectChars++;
+        newActiveIndex++;
+      } else {
+        newIncorrectChars++;
+        currentTask.hasError = true;
       }
-    } else {
-      currentTask.hasError = true;
-      currentTask.incorrectChars++;
     }
+
+    currentTask.correctChars += newCorrectChars;
+    currentTask.incorrectChars += newIncorrectChars;
+    currentTask.activeIndex = newActiveIndex;
 
     if (startTime === 0) {
       startTime = new Date().getTime();
@@ -166,17 +174,31 @@ document.addEventListener("DOMContentLoaded", () => {
   elements.sample.innerHTML = strToHTML(currentTask.text, 0);
   elements.numWords.innerText = currentTask.numwords;
 
-  // Event listeners
   elements.visibleInput.addEventListener("input", function (event) {
-    const typedChar = elements.visibleInput.value.substring(1);
+    if (isComposing) return; 
 
-    if (typedChar && !currentTask.finished) {
-      for (let i = 0; i < typedChar.length; i++) {
-        updateUI(typedChar[i]);
-      }
+    const typedText = elements.visibleInput.value.substring(1); 
+
+    if (typedText.length > 0 && !currentTask.finished) {
+      updateUI(typedText);
     }
 
-    elements.visibleInput.value = ">";
+    if (!isComposing && !currentTask.finished) {
+      elements.visibleInput.value = ">";
+    }
+  });
+
+  elements.visibleInput.addEventListener("compositionstart", () => {
+    isComposing = true;
+  });
+
+  elements.visibleInput.addEventListener("compositionend", (event) => {
+    isComposing = false;
+    const typedText = elements.visibleInput.value.substring(1); 
+    if (typedText.length > 0 && !currentTask.finished) {
+      updateUI(typedText);
+    }
+    elements.visibleInput.value = ">"; 
   });
 
   elements.visibleInput.addEventListener("keydown", function (event) {
@@ -188,6 +210,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
       event.preventDefault();
       resetTaskState();
+    }
+    if (event.key === "Backspace" && elements.visibleInput.value === ">") {
+      event.preventDefault();
     }
   });
 
@@ -227,23 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.visibleInput.classList.toggle("gray", inputHidden);
   });
 
-  // Add CSS for Khmer text
-  // const style = document.createElement("style");
-  // style.textContent = `
-  //   #sample {
-  //     font-family: 'Noto Sans Khmer', 'Khmer OS', 'Hanuman', sans-serif;
-  //     font-size: 1.25rem;
-  //     line-height: 1.6;
-  //   }
-  //   .cursor {
-  //     background-color: rgba(255, 255, 255, 0.3);
-  //     border-radius: 2px;
-  //     padding: 0 1px;
-  //     margin: 0 -1px;
-  //   }
-  // `;
-  // document.head.appendChild(style);
 
   elements.visibleInput.focus();
 });
-

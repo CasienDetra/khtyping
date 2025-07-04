@@ -1,35 +1,34 @@
-/* @import url("https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&display=swap"); */
 * {
-  padding: 0;
-  margin: 0;
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  font-family: "Kdam Thmor Pro", monospace;
-  color: #080b14;
-  background-color: #183b4e;
+  background-color: #000000;
+  color: #FFFFFF;
+  font-family: "Kdam Thmor Pro", "Roboto Mono", monospace;
   margin: 0;
   padding: 0;
 }
 
 .blue {
-  color: rgb(105, 105, 255);
+  color: blue;
   font-weight: 400;
 }
 
 .red {
-  color: white;
+  background-color: #000000;
+  color: red;
   font-weight: 800;
-  background-color: rgb(237, 66, 66);
 }
 
 .black {
-  color: black;
+  color: #000000;
 }
 
 .green {
-  color: rgb(129, 245, 80);
+  color: green;
   font-weight: 800;
 }
 
@@ -38,213 +37,237 @@ body {
 }
 
 #vanta {
-  position: absolute;
-  top: 0;
   bottom: 0;
-  right: 0;
-  left: 0;
-  width: 100%;
   height: 100%;
-  z-index: -1;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
   transition: all 0.3s ease-in-out;
+  width: 100%;
+  z-index: -1;
 }
 
 h1 {
-  top: 0;
-  padding: 0;
+  color: #FFFFFF;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
   margin: 0;
-  color: #dda853;
-  -webkit-filter: drop-shadow(0 0 25px #dda853);
-  filter: drop-shadow(0 0 25px #dda853, 0 0 25px #dda853, 0 0 25px #dda853);
+  padding: 0;
+  top: 0;
+  -webkit-filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  font-size: 3em;
+  text-align: center;
+  margin-bottom: 2em;
 }
 
 main {
-  width: 100%;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 1.5em;
-  gap: 10em;
-  opacity: 0;
-  filter: blur(10px);
-  transition:
-    opacity 0.3s ease-in-out,
-    filter 0.3s ease-in-out;
   animation: fadeIn 0.5s forwards;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 3em;
+  justify-content: center;
+  opacity: 0;
+  padding: 2em;
+  transition: opacity 0.3s ease-in-out, filter 0.3s ease-in-out;
+  width: 100%;
+  min-height: 100vh;
 }
 
 section {
+  background-color: #000000;
+  border: 1px solid #333333;
+  border-radius: 12px;
   display: flex;
   flex-wrap: nowrap;
-  box-shadow:
-    0 0 25px #97866a,
-    0 0 25px #97866a,
-    0 0 25px #97866a;
-  border: 3px solid #183b4e;
-  border-radius: 8px;
-  background-color: #183b4e;
-  padding: 0;
+  max-width: 900px;
+  padding: 1.5em;
   width: 100%;
-  max-width: 600px;
+  gap: 1.5em;
 }
 
 .menu-container {
+  align-items: stretch;
   display: flex;
-  flex-wrap: wrap;
   flex-direction: column;
-  align-items: start;
-  justify-content: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   transition: all 0.3s ease-in-out;
-
-  button {
-    width: 100%;
-    box-sizing: border-box;
-    border: 20px double#183B4E;
-  }
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .menu-container button {
-  border: 3px solid #183b4e;
-
-  background-color: #dda853;
-  color: #183b4e;
+  background-color: black;
   border: none;
-  padding: 1em;
-  font-size: 1.2em;
+  color: white;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  font-size: 1.1em;
+  padding: 0.8em 1.2em;
+  transition: all 0.2s ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: bold;
 }
+
+.menu-container button:last-child {
+  margin-bottom: 0;
+}
+
+.menu-container button:hover {
+  background-color: #333333;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
 .new {
-  border-radius: 8px 0 0 0;
+  /* border-radius: 8px; */
+  background-color: transparent;
 }
+
 #about {
   background-color: transparent;
-  color: red;
-  border-radius: 0 0 0 8px;
+  border-radius: 8px;
+  color: #FFFFFF;
 }
 #about:hover {
-  color: #dda853;
+  color: #CCCCCC;
 }
 
 .btn:hover {
-  background-color: transparent;
-  color: #dda853;
-  border: 6px inline #dda853;
+  background-color: #333333;
+  border: none;
+  color: #FFFFFF;
+}
+
+.game-container {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
 }
 
 .game-text {
-  display: flex;
-  justify-content: center;
   align-items: center;
+  display: flex;
   flex-wrap: wrap;
-  font-size: 1.5rem;
-  padding: 0 1em;
+  font-size: 1.5rem; /* Reduced font size */
+  justify-content: center;
+  padding: 0 0.5em;
+  line-height: 1.5;
+  min-height: 100px;
+  background-color: #000000;
+  border-radius: 8px;
+  padding: 1em;
 }
 
-/* .game-input {
-    display: n
-
-} */
-
-/* .game-input input{
-    width: 100%;
-    box-sizing: border-box;
-    padding: 1em;
-    font-size: 1.2em;
-    border: 20px double#183B4E;
-    background-color: #DDA853;
-    color:#183B4E;
-} */
 .menu-container > button > #about {
+  color: #FFFFFF;
   text-decoration: none;
-  color: #dda853;
-  &:hover {
-    color: #dda853;
-  }
+}
+.menu-container > button > #about:hover {
+  color: #CCCCCC;
 }
 .menu-container:hover {
   background-color: transparent;
-  color: #dda853;
-  border: 3px solid #dda853;
+  border: none;
+  color: #FFFFFF;
 }
 .score-container {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
   align-items: center;
+  border-radius: 8px;
+  display: flex;
   flex-direction: column;
-  padding: 0 1em;
-  gap: 1em;
-  border: 3px solid #183b4e;
-  border-radius: 8px 8px 0 0;
+  flex-wrap: nowrap;
+  gap: 0.8em;
+  justify-content: center;
+  padding: 1em;
+  color: #FFFFFF;
+  background-color: #000000;
 }
+
+.score-container p {
+  margin: 0;
+  font-size: 1.1em;
+}
+
+.score-container span {
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
 #input {
   display: none;
 }
 .cursor {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-  padding: 0 1px;
-  margin: 0 -1px;
-  color: #dda853;
-}
-#input {
-  display: none;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  color: #000000;
+  margin: 0 -2px;
+  padding: 0 2px;
 }
 
 #visibleinput {
+  background-color: #000000;
+  border: 1px solid #333333;
   bottom: 0;
-  left: 0;
-  width: 80%;
-  text-decoration: none;
-  border: none;
-  background-color: hsla(205, 66%, 43%, 0.479);
-
-  padding: 0.5rem;
+  color: #FFFFFF;
   font-size: 1.5rem;
+  left: 0;
+  padding: 0.5em ;
+  text-decoration: none;
+  width: 100%;
+  outline: none;
 }
 
 #visibleinput:focus {
+  border-color: #FFFFFF;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
   color: white;
-  border: none;
-  text-decoration: none;
   outline: none;
+  text-decoration: none;
 }
 .about-internal {
-  background-color: black;
-  max-width: 40rem;
+  background-color: #000000;
+  border-radius: 8px;
+  margin-bottom: 1rem;
   margin-left: auto;
   margin-right: auto;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  padding-block: 0.25rem;
+  max-width: 40rem;
+  padding: 1.5rem;
+  padding-block: 0.5rem;
+  color: #FFFFFF;
 }
 .game-text {
-  flex: 1;
   display: flex;
+  flex: 1;
 }
 
-@media only screen and (max-width: 600px) {
-  body {
-    font-size: 80%;
-  }
-
+@media only screen and (max-width: 768px) {
   section {
     flex-direction: column;
+    padding: 1em;
   }
 
   .menu-container {
     flex-direction: row;
     width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1em;
+    margin-bottom: 1em;
   }
 
   .menu-container button {
     flex: 1;
-    font-size: 1rem;
-    padding: 0.8em;
+    font-size: 0.9em;
+    padding: 0.6em;
+    margin-right: 0.5em;
+    margin-bottom: 0;
   }
+  .menu-container button:last-child {
+    margin-right: 0;
+  }
+
   .score-container {
     flex: 1;
     flex-direction: column;
@@ -253,36 +276,51 @@ section {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    gap: 10em;
+    gap: 1em;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .stats p {
+    font-size: 0.9em;
   }
 
   #sample {
-    font-size: 1rem;
+    font-size: 1rem; /* Reduced font size for smaller screens */
   }
 
   #visibleinput {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 }
 
-/* Very small screens */
-@media only screen and (max-width: 600px) {
-  #vanta {
-    right: 0;
-    bottom: 0;
+@media only screen and (max-width: 480px) {
+  h1 {
+    font-size: 2.2em;
   }
 
   body {
-    font-size: 60%;
+    font-size: 70%;
+  }
+
+  .menu-container {
+    flex-wrap: wrap;
   }
 
   .menu-container button {
-    padding: 0.6em;
+    width: 48%;
+    margin-right: 2%;
+    margin-bottom: 0.5em;
   }
-  .about {
-    border-radius: 0px 8px 0px 0px;
+  .menu-container button:nth-child(2n) {
+    margin-right: 0;
   }
+
+  .game-text {
+    font-size: 1.2rem; /* Reduced font size for very small screens */
+  }
+
   .stats {
-    gap: 1.6em;
+    gap: 0.8em;
   }
 }
